@@ -1,0 +1,66 @@
+\documentclass[12pt]{article}
+\usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\newcommand{\R}{\mathbb{R}}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\title{CSC246 Sequence Project Math writeup}
+\author{Tianyi Ma}
+\maketitle
+
+Calculating $\alpha_t(j)$:\\
+1. Initialization:
+\begin{align*}
+\alpha_1(j) = \pi_jb_j(o_1) 1 \leq j \leq N
+\end{align*}
+2. Recursion:
+\begin{align*}
+\alpha_t(j) = \sum_{i=1}^N \alpha_{t-1}(i)a_{ij}b_j(o_t); 1 \leq j \leq N, 1 < t \leq T
+\end{align*}
+3. Termination:
+\begin{align*}
+P(O|\lambda) = \sum_{i=1}^N \alpha_T(i)
+\end{align*}
+
+$\pi_j$ - the initial probability of hidden state $j$\\
+$a_{ij}$ - the transition probability from state $i$ to $j$\\
+$b_j(o_t)$ - the emission probability of state $j$ to the $t$-th observation\\
+$N$ - the number of possible hidden states\\
+$T$ - the total number of tokens in the sequence\\
+$P(O|\lambda)$ - the probability of the sample sequence based on current parameters\\
+
+Calculating $\beta_t(i)$:\\
+1. Initialization:
+\begin{align*}
+\beta_T(i) = 1; \text{    } 1 \leq i \leq N
+\end{align*}
+2. Recursion:
+\begin{align*}
+\beta_t(i) = \sum_{j=1}^N a_{ij}b_j(o_{t+1})\beta_{t+1}(j); \text{    } 1 \leq i \leq N, 1 \leq t < T
+\end{align*}
+3. Termination:
+\begin{align*}
+P(O|\lambda) = \sum_{j=1}^N \pi_jb_j(o_1)\beta_1(j)
+\end{align*}
+
+EM-algorithm:\\
+E-step:
+\begin{align*}
+\gamma_t(j) &= \frac{\alpha_t(j)\beta_t(j)}{\alpha_T(q_F)}  \text{    } \forall t \text{ and } j\\
+\xi_t(i,j) &= \frac{\alpha_t(j)a_{ij}b_j\beta_{t+1}(j)}{\alpha_T(q_F)}  \text{    } \forall t, i,\text{and } j
+\end{align*}
+M-step:
+\begin{align*}
+\hat{a}_{ij} &= \frac{\sum_{t=1}^{T-1}\xi_t(i,j)}{\sum_{t=1}^{T-1}\sum_{k=1}^N\xi_t(i,k)}\\
+\hat{b}_j(v_k) &= \frac{\sum_{t=1 s.t. O_t = v_k}^T \gamma_t(i,j)}{\sum_{t=1}^T\gamma_t(j)}
+\end{align*}
+
+Two questions:\\
+1. How to compute the log likelihood?\\
+2. What is $q_F$ in the E-step?
+
+
+\end{document}
